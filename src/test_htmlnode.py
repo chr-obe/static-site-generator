@@ -1,37 +1,72 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
-    def test_props_to_html(self):
+    def test_to_html_props(self):
         node = HTMLNode(
-            "a", "boot.dev", props={"href": "https://www.boot.dev", "target": "_blank"}
+            "div",
+            "Hello, world!",
+            None,
+            {"class": "greeting", "href": "https://boot.dev"},
         )
-        expected = ' href="https://www.boot.dev" target="_blank"'
-        actual = node.props_to_html()
-        self.assertEqual(expected, actual)
+        self.assertEqual(
+            node.props_to_html(),
+            ' class="greeting" href="https://boot.dev"',
+        )
 
-    def test_no_value(self):
-        node = LeafNode(None, "hr")
-        with self.assertRaises(ValueError):
-            node.to_html()
+    def test_to_html_no_children(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
 
-    def test_leaf_props_to_html(self):
-        node = LeafNode("boot.dev website", "a", {"href": "https://www.boot.dev/"})
-        expected = ' href="https://www.boot.dev/"'
-        actual = node.props_to_html()
-        self.assertEqual(expected, actual)
+    def test_to_html_no_tag(self):
+        node = LeafNode(None, "Hello, world!")
+        self.assertEqual(node.to_html(), "Hello, world!")
 
-    def test_to_html_has_value(self):
-        node = LeafNode("boot.dev website", "a", {"href": "https://www.boot.dev/"})
-        expected = '<a href="https://www.boot.dev/">boot.dev website</a>'
-        self.assertEqual(node.to_html(), expected)
+    def test_to_html_with_children(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
 
-    def test_to_html_empty_value(self):
-        node = LeafNode("lorem ipsum")
-        expected = "lorem ipsum"
-        self.assertEqual(node.to_html(), expected)
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><b>grandchild</b></span></div>",
+        )
+
+    def test_to_html_many_children(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        self.assertEqual(
+            node.to_html(),
+            "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>",
+        )
+
+    def test_headings(self):
+        node = ParentNode(
+            "h2",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        self.assertEqual(
+            node.to_html(),
+            "<h2><b>Bold text</b>Normal text<i>italic text</i>Normal text</h2>",
+        )
 
 
 if __name__ == "__main__":
