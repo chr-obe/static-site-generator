@@ -38,3 +38,7 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("lorem ipsum", TextType.TEXT)
         expected = "TextNode(lorem ipsum, text, None)"
         self.assertEqual(repr(node), expected)
+
+
+if __name__ == "__main__":
+    unittest.main()
