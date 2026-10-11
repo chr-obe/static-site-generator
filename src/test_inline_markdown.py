@@ -6,6 +6,7 @@ from inline_markdown import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 from textnode import TextNode, TextType
 
@@ -157,7 +158,7 @@ class TestGenerator(unittest.TestCase):
         ]
         self.assertListEqual(split_nodes_image([node]), expected)
 
-    # test separating a single image in the middle
+    # test separating a single link in the middle
     def test_one_link_in_middle(self):
         node = TextNode("This is text with a [link](url) in the middle!", TextType.TEXT)
         expected = [
@@ -167,7 +168,7 @@ class TestGenerator(unittest.TestCase):
         ]
         self.assertListEqual(split_nodes_link([node]), expected)
 
-    # test separating a single image at the start
+    # test separating a single link at the start
     def test_one_link_at_start(self):
         node = TextNode("[This](url) is text with a link at the start!", TextType.TEXT)
         expected = [
@@ -176,7 +177,7 @@ class TestGenerator(unittest.TestCase):
         ]
         self.assertListEqual(split_nodes_link([node]), expected)
 
-    # test two images
+    # test two links
     def test_multiple_links_nodes(self):
         node = TextNode("This [text](url) has multiple [links](url2) in it!", TextType.TEXT)
         expected = [
@@ -187,3 +188,20 @@ class TestGenerator(unittest.TestCase):
             TextNode(" in it!", TextType.TEXT)
         ]
         self.assertListEqual(split_nodes_link([node]), expected)
+
+    # test the whole generator
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        self.assertListEqual(text_to_textnodes(text), expected)
