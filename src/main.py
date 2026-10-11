@@ -17,7 +17,6 @@ def copy_file_contents(src: str, dest: str, top_level: bool = False) -> None:
 
     if not os.path.isfile(src):
         contents = os.listdir(src)
-        print(contents)
         for content in contents:
             new_src = os.path.join(src, content)
             new_dest = os.path.join(dest, content)
