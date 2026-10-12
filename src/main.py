@@ -1,12 +1,14 @@
 import os
 import shutil
+from sys import argv
 
 from generator import generate_pages_recursive
 
 
 def main() -> None:
-    copy_file_contents("static/", "public/", True)
-    generate_pages_recursive("content/", "template.html", "public/")
+    basepath = argv[1] if len(argv) != 1 else "/"
+    copy_file_contents("static/", "docs/", True)
+    generate_pages_recursive(basepath, "content/", "template.html", "docs/")
 
 
 def copy_file_contents(src: str, dest: str, top_level: bool = False) -> None:
