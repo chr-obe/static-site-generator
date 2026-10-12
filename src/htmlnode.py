@@ -1,3 +1,6 @@
+from multiprocessing import Value
+
+
 class HTMLNode:
     def __init__(self,
         tag: str | None = None,
@@ -34,12 +37,12 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self, tag: str | None, value: str, props: dict[str, str] | None = None) -> None:
-        super().__init__(tag, value, props=props)
+        super().__init__(tag=tag, value=value, props=props)
 
     def to_html(self) -> str:
-        if not self.value:
+        if self.value is None:
             raise ValueError("leaf node must have a value")
-        if not self.tag:
+        if self.tag is None:
             return self.value
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
 

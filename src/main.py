@@ -1,9 +1,12 @@
 import os
 import shutil
 
+from generator import generate_page
 
 def main() -> None:
     copy_file_contents("static/", "public/", True)
+    generate_page("content/index.md", "template.html", "public/index.html")
+
 
 def copy_file_contents(src: str, dest: str, top_level: bool = False) -> None:
     # check for valid paths
